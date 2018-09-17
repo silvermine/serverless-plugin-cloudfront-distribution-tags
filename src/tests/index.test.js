@@ -33,4 +33,60 @@ describe('serverless-plugin-cloudfront-distribution-tags', function() {
 
    });
 
+   describe('_addTagsToResource', function() {
+
+      it('adds new tags to an untagged resource', function() {
+         var tags = { key1: 'value1' },
+             resource = { Properties: {} };
+
+         plugin._addTagsToResource(resource, tags);
+
+         expect(resource.Properties.Tags).to.eql([
+            { Key: 'key1', Value: 'value1' },
+         ]);
+      });
+
+      it('merges new tags with existing tags on resource', function() {
+         var tags = { key1: 'value1', key3: 'value3' },
+             resource;
+
+         resource = {
+            Properties: {
+               Tags: [
+                  { Key: 'key1', Value: 'existingValue1' },
+                  { Key: 'key2', Value: 'existingValue2' },
+               ],
+            },
+         };
+
+         plugin._addTagsToResource(resource, tags);
+
+         expect(resource.Properties.Tags).to.eql([
+            { Key: 'key3', Value: 'value3' },
+            { Key: 'key1', Value: 'existingValue1' },
+            { Key: 'key2', Value: 'existingValue2' },
+         ]);
+      });
+
+      it('prefers the existing tag when new tags contain a tag with the same key', function() {
+         var tags = { key1: 'value1' },
+             resource;
+
+         resource = {
+            Properties: {
+               Tags: [
+                  { Key: 'key1', Value: 'existingValue1' },
+               ],
+            },
+         };
+
+         plugin._addTagsToResource(resource, tags);
+
+         expect(resource.Properties.Tags).to.eql([
+            { Key: 'key1', Value: 'existingValue1' },
+         ]);
+      });
+
+   });
+
 });
