@@ -8,7 +8,23 @@
 
 ## What is it?
 
-TODO: Document why is this plugin is needed
+This is a plugin for the Serverless framework that will copy the tags from a
+service's CloudFormation stack to any CloudFront distributions contained in
+that stack.
+
+The [CloudFormation docs][automatic-stack-tags] note that all stack-level tags
+will be automatically propagated to resources that CloudFormation supports.
+CloudFront distributions [have support for tags via
+CloudFormation][cloudfront-dist-tags]. Unfortunately, stack-level tags are not
+propagated to CloudFront distributions at this time (and it [seems to have been
+this way for a while][thread-tag-cf]). Until the behavior changes, this plugin
+can be used to mimic the behavior of the automatic stack tag propagation that
+CloudFormation provides. This will be performed by adding the stack-level tags
+found in the CloudFormation template to the CloudFront distribution before the
+stack is deployed.
+
+NOTE: Once CloudFormation supports propagating stack-level tags to CloudFront
+distribution, this plugin will be obsolete.
 
 
 ## How do I use it?
@@ -43,4 +59,7 @@ This software is released under the MIT license. See [the license file](LICENSE)
 details.
 
 
+[automatic-stack-tags]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html
+[cloudfront-dist-tags]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudfront-distribution.html#cfn-cloudfront-distribution-tags
+[thread-tag-cf]: https://forums.aws.amazon.com/thread.jspa?threadID=115069
 [contributing]: https://github.com/silvermine/silvermine-info#contributing
