@@ -1,6 +1,6 @@
 {
   "name": "@silvermine/serverless-plugin-cloudfront-distribution-tags",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Plugin for the SLS 1.x branch to provide support for propagating CloudFormation stack tags to CloudFront distributions",
   "main": "src/index.js",
   "scripts": {
