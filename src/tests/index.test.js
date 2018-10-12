@@ -33,6 +33,58 @@ describe('serverless-plugin-cloudfront-distribution-tags', function() {
 
    });
 
+   describe('_modifyTemplate', function() {
+
+      function runTest(config, stackTags, expectedResourceTags) {
+         var cloudFrontDistributionResource = { Type: 'AWS::CloudFront::Distribution' },
+             serverlessStub, getStackTagsStub, addTagsToResourceStub;
+
+         serverlessStub = stubServerless();
+         serverlessStub.service = {
+            custom: {
+               'serverless-plugin-cloudfront-distribution-tags': config,
+            },
+            provider: {
+               compiledCloudFormationTemplate: {
+                  Resources: [
+                     cloudFrontDistributionResource,
+                  ],
+               },
+            },
+         };
+         plugin = new Plugin(serverlessStub, {});
+         getStackTagsStub = sinon.stub(plugin, '_getStackTags');
+         addTagsToResourceStub = sinon.stub(plugin, '_addTagsToResource');
+
+         getStackTagsStub.returns(stackTags);
+
+         plugin._modifyTemplate();
+
+         sinon.assert.calledOnce(getStackTagsStub);
+         sinon.assert.calledOn(getStackTagsStub, plugin);
+
+         sinon.assert.calledOnce(addTagsToResourceStub);
+         sinon.assert.calledOn(addTagsToResourceStub, plugin);
+         sinon.assert.calledWith(addTagsToResourceStub, cloudFrontDistributionResource, expectedResourceTags);
+         getStackTagsStub.restore();
+         addTagsToResourceStub.restore();
+      }
+
+      it('adds stack tags to a CloudFront distribution', function() {
+         runTest(undefined, { key1: 'value1' }, { key1: 'value1' });
+         runTest({}, { key1: 'value1' }, { key1: 'value1' });
+      });
+
+      it('does not add excluded stack tags to a CloudFront distribution', function() {
+         runTest(
+            { excludedTags: [ 'someTagToBeExcluded' ] },
+            { key1: 'value1', someTagToBeExcluded: 'excludedTagValue' },
+            { key1: 'value1' }
+         );
+      });
+
+   });
+
    describe('_addTagsToResource', function() {
 
       it('adds new tags to an untagged resource', function() {

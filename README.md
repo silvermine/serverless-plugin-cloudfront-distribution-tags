@@ -46,6 +46,20 @@ plugins:
    - '@silvermine/serverless-plugin-cloudfront-distribution-tags'
 ```
 
+Since CloudFront distributions can take quite a while to deploy, you likely only want to
+have to CloudFormation update them when changes are actually made. Unfortunately, when the
+tags on a distribution change, CloudFormation will redeploy the distribution. If you have
+a tag with a value that changes even when the distribution may not have, e.g.
+`CODE_VERSION`, you might want to exclude this tag using the `excludedTags` configuration
+option.
+
+```yml
+custom:
+   serverless-plugin-cloudfront-distribution-tags:
+      excludedTags:
+         - CODE_VERSION
+         - ANOTHER_TAG_TO_BE_EXCLUDED
+```
 
 ## How do I contribute?
 
